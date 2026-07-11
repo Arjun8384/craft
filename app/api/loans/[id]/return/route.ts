@@ -84,8 +84,7 @@ export async function PATCH(
 
     loan.status = "Returned";
 
-// TODO: Re-enable after Loan model is updated.
-// loan.actualReturnDate = new Date();
+loan.actualReturnDate = new Date();
 
 await loan.save();
 
@@ -93,16 +92,20 @@ await loan.save();
       success: true,
       data: loan,
     });
-  } catch {
-    return NextResponse.json(
-      {
-        success: false,
-        message:
-          "Failed to return tool.",
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+  } catch (error) {
+  console.error(error);
+
+  return NextResponse.json(
+    {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to return tool.",
+    },
+    {
+      status: 500,
+    }
+  );
+}
 }

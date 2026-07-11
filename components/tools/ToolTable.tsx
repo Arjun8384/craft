@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-
 import {
   Eye,
   Pencil,
@@ -10,7 +9,6 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
-
 import type { ITool } from "@/types/tool";
 
 import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDialog";
@@ -30,15 +28,19 @@ import {
 
 interface Props {
   tools: ITool[];
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (
+    id: string
+  ) => Promise<void>;
 }
 
 export default function ToolTable({
   tools,
   onDelete,
 }: Props) {
+  const { user } = useAuth();
 
-  const { role } = useAuth();
+  const isAdmin =
+    user?.role === "admin";
 
   const [selectedId, setSelectedId] =
     useState<string>();
@@ -64,17 +66,24 @@ export default function ToolTable({
   if (!tools.length) {
     return (
       <EmptyState
-        title="No Tools"
-        description="No tools found."
-        actionLabel="Add Tool"
-        actionHref="/dashboard/tools/new"
+        title="No Tools Found"
+        description="No tools are available."
+        actionHref={
+          isAdmin
+            ? "/dashboard/tools/new"
+            : undefined
+        }
+        actionLabel={
+          isAdmin
+            ? "Add Tool"
+            : undefined
+        }
       />
     );
   }
 
   return (
     <>
-
       <DeleteConfirmationDialog
         open={open}
         loading={loading}
@@ -82,38 +91,45 @@ export default function ToolTable({
         onConfirm={confirmDelete}
       />
 
-      <div className="rounded-xl border bg-white shadow-sm">
-
+      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
         <Table>
-
           <TableHeader>
-
             <TableRow>
-
               <TableHead>Name</TableHead>
 
               <TableHead>Category</TableHead>
 
-              <TableHead>Total</TableHead>
+              <TableHead>Condition</TableHead>
 
-              <TableHead>Available</TableHead>
+              {isAdmin && (
+                <TableHead>
+                  Total
+                </TableHead>
+              )}
 
-              <TableHead>Status</TableHead>
+              <TableHead>
+                Available
+              </TableHead>
+
+              <TableHead>
+                Location
+              </TableHead>
+
+              <TableHead>
+                Status
+              </TableHead>
 
               <TableHead className="text-right">
                 Actions
               </TableHead>
-
             </TableRow>
-
           </TableHeader>
 
           <TableBody>
-
             {tools.map((tool) => (
-
-              <TableRow key={String(tool._id)}>
-
+              <TableRow
+                key={String(tool._id)}
+              >
                 <TableCell className="font-medium">
                   {tool.name}
                 </TableCell>
@@ -123,39 +139,77 @@ export default function ToolTable({
                 </TableCell>
 
                 <TableCell>
-                  {tool.quantity}
+                  {tool.condition}
                 </TableCell>
+
+                {isAdmin && (
+                  <TableCell>
+                    {tool.quantity}
+                  </TableCell>
+                )}
 
                 <TableCell>
                   {tool.availableQuantity}
                 </TableCell>
 
                 <TableCell>
-
-                  <Badge>
-
-                    {tool.status}
-
-                  </Badge>
-
+                  {tool.location}
                 </TableCell>
 
                 <TableCell>
+                  <Badge
+                    variant={
+                      tool.availableQuantity === 0
+                        ? "destructive"
+                        : tool.availableQuantity <= 2
+                        ? "secondary"
+                        : "default"
+                    }
+                  >
+                    {tool.availableQuantity === 0
+                      ? "Out of Stock"
+                      : tool.availableQuantity <= 2
+                      ? "Low Stock"
+                      : "Available"}
+                  </Badge>
+                </TableCell>
 
+                <TableCell>
                   <div className="flex justify-end gap-2">
+                    {isAdmin ? (
+  <Link
+    href={`/dashboard/tools/${tool._id}`}
+  >
+    <Button
+      variant="outline"
+      size="icon"
+      aria-label={`View ${tool.name}`}
+    >
+      <Eye className="h-4 w-4" />
+    </Button>
+  </Link>
+) : (
+  <Link
+    href={`/dashboard/loans/new?tool=${tool._id}`}
+  >
+    <Button
+      disabled={
+        tool.availableQuantity === 0
+      }
+      variant={
+        tool.availableQuantity === 0
+          ? "secondary"
+          : "default"
+      }
+    >
+      {tool.availableQuantity === 0
+        ? "Out of Stock"
+        : "Borrow"}
+    </Button>
+  </Link>
+)}
 
-                    <Link
-                      href={`/dashboard/tools/${tool._id}`}
-                    >
-                      <Button
-                        variant="outline"
-                        size="icon"
-                      >
-                        <Eye className="h-4 w-4"/>
-                      </Button>
-                    </Link>
-
-                    {role === "admin" && (
+                    {isAdmin && (
                       <>
                         <Link
                           href={`/dashboard/tools/${tool._id}/edit`}
@@ -163,15 +217,17 @@ export default function ToolTable({
                           <Button
                             variant="secondary"
                             size="icon"
+                            aria-label={`Edit ${tool.name}`}
                           >
-                            <Pencil className="h-4 w-4"/>
+                            <Pencil className="h-4 w-4" />
                           </Button>
                         </Link>
 
                         <Button
                           variant="destructive"
                           size="icon"
-                          onClick={()=>{
+                          aria-label={`Delete ${tool.name}`}
+                          onClick={() => {
                             setSelectedId(
                               String(tool._id)
                             );
@@ -179,25 +235,17 @@ export default function ToolTable({
                             setOpen(true);
                           }}
                         >
-                          <Trash2 className="h-4 w-4"/>
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </>
                     )}
-
                   </div>
-
                 </TableCell>
-
               </TableRow>
-
             ))}
-
           </TableBody>
-
         </Table>
-
       </div>
-
     </>
   );
 }

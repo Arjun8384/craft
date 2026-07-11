@@ -15,7 +15,7 @@ export async function GET(
   req: NextRequest
 ) {
   try {
-    await requireAuth();
+    const user = await requireAuth();
 
     await connectDB();
 
@@ -68,8 +68,11 @@ export async function GET(
       ];
     }
 
-    if (status !== "all") {
+    if (status !== "all"){
       query.status = status;
+    }
+    if (status !== "admin") {
+      query.borrowerEmail = user.email;
     }
 
     const sortQuery: {createdAt: SortOrder; } = {

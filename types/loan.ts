@@ -5,8 +5,6 @@ export interface ILoan {
 
   toolId: string | ITool;
 
-  toolName: string;
-
   returnDate: string;
 
   borrowerName: string;
@@ -27,13 +25,18 @@ export interface ILoan {
     | "Borrowed"
     | "Returned";
 
-  createdAt?: string;
+  // createdAt?: string;
 
-  updatedAt?: string;
+  // updatedAt?: string;
 }
 
 export interface LoanPayload {
   toolId: string;
   quantity: number;
   expectedReturnDate: string;
+  borrowerName: string;
+  borrowerEmail: string;
+  borrowerPhone: string;
+  borrowDate: string;
+  status: | "Borrowed" | "Returned"; 
 }

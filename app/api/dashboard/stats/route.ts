@@ -10,8 +10,7 @@ export async function GET() {
 
     await connectDB();
 
-    const stats =
-      await getDashboardStats();
+    const stats = await getDashboardStats();
 
     return NextResponse.json({
       success: true,

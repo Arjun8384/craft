@@ -14,10 +14,12 @@ import { Label } from "@/components/ui/label";
 
 interface LoanFormProps {
   tools: ITool[];
+  selectedToolId?: string;
 }
 
 export default function LoanForm({
   tools,
+  selectedToolId,
 }: LoanFormProps) {
   const router = useRouter();
 
@@ -25,8 +27,8 @@ export default function LoanForm({
     useState(false);
 
   const [form, setForm] =
-    useState<LoanPayload>({
-      toolId: "",
+      useState<LoanPayload>({
+      toolId: selectedToolId ?? "",
       borrowerName: "",
       borrowerEmail: "",
       borrowerPhone: "",
@@ -37,6 +39,12 @@ export default function LoanForm({
       expectedReturnDate: "",
       status: "Borrowed",
     });
+
+    const selectedTool = tools.find(
+  (tool) =>
+    tool._id.toString() ===
+    form.toolId
+);
 
   function handleChange(
     e: React.ChangeEvent<
@@ -69,7 +77,10 @@ export default function LoanForm({
       );
 
       toast.success(
-        "Tool borrowed successfully."
+        `Tool borrowed successfully.
+      Return it before ${new Date(
+          form.expectedReturnDate
+        ).toLocaleDateString()}.`
       );
 
       router.push("/dashboard/loans");
@@ -119,8 +130,10 @@ export default function LoanForm({
                   key={tool._id.toString()}
                   value={tool._id.toString()}
                 >
-                  {tool.name} (
-                  {tool.availableQuantity} available)
+                  {tool.name}
+                  {" • "}
+                  {tool.availableQuantity}
+                  available
                 </option>
               ))}
           </select>
@@ -136,6 +149,7 @@ export default function LoanForm({
             name="quantity"
             type="number"
             min={1}
+            max={selectedTool?.availableQuantity ?? 1}
             value={form.quantity}
             onChange={handleChange}
             required
@@ -213,7 +227,7 @@ export default function LoanForm({
         disabled={loading}
       >
         {loading
-          ? "Processing..."
+          ? "Borrowing..."
           : "Borrow Tool"}
       </Button>
     </form>
