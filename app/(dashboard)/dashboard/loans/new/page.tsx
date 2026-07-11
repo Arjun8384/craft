@@ -1,15 +1,13 @@
 import LoanForm from "@/components/loans/LoanForm";
-
-import { getTools } from "@/services/toolService";
+import Tool from "@/models/Tool";
+import { connectDB } from "@/lib/mongodb";
 
 export default async function NewLoanPage() {
-  const response = await getTools();
+  await connectDB();
 
-  const tools = response.data.filter(
-    (tool: {
-      availableQuantity: number;
-    }) => tool.availableQuantity > 0
-  );
+  const tools = await Tool.find({
+    availableQuantity: { $gt: 0 },
+  }).lean();
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -17,7 +15,7 @@ export default async function NewLoanPage() {
         Borrow Tool
       </h1>
 
-      <LoanForm tools={tools} />
+      <LoanForm tools={JSON.parse(JSON.stringify(tools))} />
     </div>
   );
 }

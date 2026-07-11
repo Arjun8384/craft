@@ -8,12 +8,12 @@ export interface ITool extends Document {
   name: string;
   description: string;
   category: string;
-  condition: string;
+  condition: "Excellent" | "Good" | "Fair" | "Damaged";
   quantity: number;
   availableQuantity: number;
   location: string;
-  imageUrl?: string;
-  status: "Available" | "Borrowed";
+  image?: string;
+  status: "Available" | "Borrowed" | "Maintenance";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,9 +37,15 @@ const ToolSchema = new Schema<ITool>(
     },
 
     condition: {
-      type: String,
-      required: true,
-    },
+  type: String,
+  enum: [
+    "Excellent",
+    "Good",
+    "Fair",
+    "Damaged",
+  ],
+  required: true,
+},
 
     quantity: {
       type: Number,
@@ -58,13 +64,14 @@ const ToolSchema = new Schema<ITool>(
       required: true,
     },
 
-    imageUrl: String,
+    image: String,
 
     status: {
       type: String,
       enum: [
         "Available",
         "Borrowed",
+        "Maintenance",
       ],
       default: "Available",
     },

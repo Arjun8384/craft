@@ -1,11 +1,8 @@
-import { ITool } from "@/types/tool";
+import type { ToolInput } from "@/lib/validators";
 
 const BASE_URL = "/api/tools";
 
-export type ToolPayload = Omit<
-  ITool,
-  "_id" | "createdAt" | "updatedAt"
->;
+export type ToolPayload = ToolInput;
 
 async function handleResponse(response: Response) {
   const data = await response.json();

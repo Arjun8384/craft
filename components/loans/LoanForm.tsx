@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { createLoan } from "@/services/loanService";
 import { LoanPayload } from "@/types/loan";
-import { ITool } from "@/types/tool";
+import { ITool } from "@/models/Tool";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -116,8 +116,8 @@ export default function LoanForm({
               )
               .map((tool) => (
                 <option
-                  key={tool._id}
-                  value={tool._id}
+                  key={tool._id.toString()}
+                  value={tool._id.toString()}
                 >
                   {tool.name} (
                   {tool.availableQuantity} available)

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { RotateCcw } from "lucide-react";
 
-import { ILoan } from "@/types/loan";
+import { ILoan } from "@/models/Loan";
 import EmptyState from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -76,7 +76,7 @@ export default function LoanTable({
         <TableBody>
           {loans.map((loan) => (
             <TableRow
-              key={loan._id}
+              key={loan._id.toString()}
             >
               <TableCell>
                 {loan.borrowerName}
@@ -127,7 +127,7 @@ export default function LoanTable({
                       aria-label={`Return tool borrowed by ${loan.borrowerName}`}
                       onClick={() =>
                         onReturn(
-                          loan._id
+                          loan._id.toString()
                         )
                       }
                     >

@@ -10,6 +10,10 @@ export interface ILoan
   extends Document {
   toolId: Types.ObjectId | ITool;
 
+  borrowDate: Date;
+
+  actualReturnDate: Date;
+
   borrowerName: string;
 
   borrowerEmail: string;
@@ -60,9 +64,18 @@ const LoanSchema =
         required: true,
       },
 
+      borrowDate: {
+        type: Date,
+        default: Date.now,
+      },
+
       expectedReturnDate: {
         type: Date,
         required: true,
+      },
+
+      actualReturnDate: {
+        type: Date,
       },
 
       returnedAt: Date,

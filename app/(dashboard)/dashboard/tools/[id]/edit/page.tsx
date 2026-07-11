@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { ITool } from "@/types/tool";
+import { ITool } from "@/models/Tool";
 import { getTool } from "@/services/toolService";
 
 import ToolForm from "@/components/tools/ToolForm";

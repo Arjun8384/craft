@@ -38,6 +38,7 @@ export async function requireAuth() {
 
 export async function requireAdmin() {
   const user = await requireAuth();
+  console.log("Current user: ", user);
 
   if (
     user.role !== "admin" 

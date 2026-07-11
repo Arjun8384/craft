@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
-import { ITool } from "@/types/tool";
+import { ITool } from "@/models/Tool";
 
 import EmptyState from "@/components/common/EmptyState";
 import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDialog";
@@ -127,7 +127,7 @@ export default function ToolTable({
 
           <TableBody>
             {tools.map((tool) => (
-              <TableRow key={tool._id}>
+              <TableRow key={String(tool._id)}>
                 <TableCell className="font-medium">
                   {tool.name}
                 </TableCell>
@@ -195,7 +195,7 @@ export default function ToolTable({
                       variant="destructive"
                       aria-label={`Delete ${tool.name}`}
                       onClick={() => {
-                        setSelectedId(tool._id);
+                        setSelectedId(tool._id.toString());
                         setDialogOpen(true);
                       }}
                     >

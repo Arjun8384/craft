@@ -6,8 +6,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-import { ITool } from "@/types/tool";
-import { ToolInput, toolSchema } from "@/lib/validators";
+import type { ToolPayload } from "@/services/toolService";
+import type { ITool } from "@/models/Tool";
+import { toolSchema } from "@/lib/validators";
+import type { ToolInput } from "@/lib/validators";
 
 import {
   createTool,
@@ -68,7 +70,7 @@ export default function ToolForm({
     },
   });
 
-  async function onSubmit(values: ToolInput) {
+  async function onSubmit(values: ToolPayload) {
     try {
       setLoading(true);
 
@@ -80,7 +82,7 @@ export default function ToolForm({
           throw new Error("Tool id missing");
         }
 
-        await updateTool(initialData._id, values);
+        await updateTool(String(initialData._id), values);
         toast.success("Tool updated successfully");
       }
 

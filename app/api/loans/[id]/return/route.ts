@@ -82,13 +82,12 @@ export async function PATCH(
 
     await tool.save();
 
-    loan.status =
-      "Returned";
+    loan.status = "Returned";
 
-    loan.actualReturnDate =
-      new Date();
+// TODO: Re-enable after Loan model is updated.
+// loan.actualReturnDate = new Date();
 
-    await loan.save();
+await loan.save();
 
     return NextResponse.json({
       success: true,

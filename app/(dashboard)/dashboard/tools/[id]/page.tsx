@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-import { ITool } from "@/types/tool";
+import { ITool } from "@/models/Tool";
 import { getTool } from "@/services/toolService";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";

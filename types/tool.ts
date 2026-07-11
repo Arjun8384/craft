@@ -1,36 +1,36 @@
-export type ToolCondition =
-  | "Excellent"
-  | "Good"
-  | "Fair"
-  | "Damaged";
+// export type ToolCondition =
+//   | "Excellent"
+//   | "Good"
+//   | "Fair"
+//   | "Damaged";
 
-export type ToolStatus =
-  | "Available"
-  | "Borrowed"
-  | "Maintenance";
+// export type ToolStatus =
+//   | "Available"
+//   | "Borrowed"
+//   | "Maintenance";
 
-export interface ITool {
-  _id:string;
+// export interface ITool {
+//   _id:string;
 
-  name: string;
+//   name: string;
 
-  category: string;
+//   category: string;
 
-  description: string;
+//   description: string;
 
-  quantity: number;
+//   quantity: number;
 
-  availableQuantity: number;
+//   availableQuantity: number;
 
-  condition: ToolCondition;
+//   condition: ToolCondition;
 
-  location: string;
+//   location: string;
 
-  status: ToolStatus;
+//   status: ToolStatus;
 
-  image?: string;
+//   image?: string;
 
-  createdAt?: Date;
+//   createdAt?: Date;
 
-  updatedAt?: Date;
-}
+//   updatedAt?: Date;
+// }
