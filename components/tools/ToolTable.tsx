@@ -1,15 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 
-import type { ITool } from "@/models/Tool";
+import {
+  Eye,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 
-import EmptyState from "@/components/common/EmptyState";
+import type { ITool } from "@/types/tool";
+
 import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDialog";
+import EmptyState from "@/components/common/EmptyState";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,116 +28,92 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface ToolTableProps {
+interface Props {
   tools: ITool[];
   onDelete: (id: string) => Promise<void>;
-}
-
-function getStatusVariant(status: string) {
-  switch (status) {
-    case "Available":
-      return "default";
-    case "Borrowed":
-      return "secondary";
-    case "Maintenance":
-      return "destructive";
-    default:
-      return "outline";
-  }
-}
-
-function getConditionVariant(condition: string) {
-  switch (condition) {
-    case "Excellent":
-      return "default";
-    case "Good":
-      return "secondary";
-    case "Fair":
-      return "outline";
-    case "Damaged":
-      return "destructive";
-    default:
-      return "outline";
-  }
 }
 
 export default function ToolTable({
   tools,
   onDelete,
-}: ToolTableProps) {
-  const { user } = useAuth();
+}: Props) {
+
+  const { role } = useAuth();
 
   const [selectedId, setSelectedId] =
-    useState<string | null>(null);
+    useState<string>();
 
-  const [dialogOpen, setDialogOpen] =
+  const [open, setOpen] =
     useState(false);
 
   const [loading, setLoading] =
     useState(false);
 
-  async function handleDelete() {
+  async function confirmDelete() {
     if (!selectedId) return;
 
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      await onDelete(selectedId);
+    await onDelete(selectedId);
 
-      setDialogOpen(false);
-      setSelectedId(null);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
+
+    setOpen(false);
   }
 
   if (!tools.length) {
     return (
       <EmptyState
-        title="No Tools Found"
-        description="There are currently no tools in inventory."
-        actionLabel={
-          user?.role === "admin"
-            ? "Add Tool"
-            : undefined
-        }
-        actionHref={
-          user?.role === "admin"
-            ? "/dashboard/tools/new"
-            : undefined
-        }
+        title="No Tools"
+        description="No tools found."
+        actionLabel="Add Tool"
+        actionHref="/dashboard/tools/new"
       />
     );
   }
 
   return (
     <>
+
       <DeleteConfirmationDialog
-        open={dialogOpen}
+        open={open}
         loading={loading}
-        onOpenChange={setDialogOpen}
-        onConfirm={handleDelete}
+        onOpenChange={setOpen}
+        onConfirm={confirmDelete}
       />
 
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
+      <div className="rounded-xl border bg-white shadow-sm">
+
         <Table>
+
           <TableHeader>
+
             <TableRow>
+
               <TableHead>Name</TableHead>
+
               <TableHead>Category</TableHead>
+
               <TableHead>Total</TableHead>
+
               <TableHead>Available</TableHead>
-              <TableHead>Condition</TableHead>
+
               <TableHead>Status</TableHead>
+
               <TableHead className="text-right">
                 Actions
               </TableHead>
+
             </TableRow>
+
           </TableHeader>
 
           <TableBody>
+
             {tools.map((tool) => (
+
               <TableRow key={String(tool._id)}>
+
                 <TableCell className="font-medium">
                   {tool.name}
                 </TableCell>
@@ -150,75 +131,73 @@ export default function ToolTable({
                 </TableCell>
 
                 <TableCell>
-                  <Badge
-                    variant={getConditionVariant(
-                      tool.condition
-                    )}
-                  >
-                    {tool.condition}
-                  </Badge>
-                </TableCell>
 
-                <TableCell>
-                  <Badge
-                    variant={getStatusVariant(
-                      tool.status
-                    )}
-                  >
+                  <Badge>
+
                     {tool.status}
+
                   </Badge>
+
                 </TableCell>
 
                 <TableCell>
+
                   <div className="flex justify-end gap-2">
 
                     <Link
                       href={`/dashboard/tools/${tool._id}`}
                     >
                       <Button
-                        size="icon"
                         variant="outline"
+                        size="icon"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-4 w-4"/>
                       </Button>
                     </Link>
 
-                    {user?.role === "admin" && (
+                    {role === "admin" && (
                       <>
                         <Link
                           href={`/dashboard/tools/${tool._id}/edit`}
                         >
                           <Button
-                            size="icon"
                             variant="secondary"
+                            size="icon"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-4 w-4"/>
                           </Button>
                         </Link>
 
                         <Button
-                          size="icon"
                           variant="destructive"
-                          onClick={() => {
+                          size="icon"
+                          onClick={()=>{
                             setSelectedId(
                               String(tool._id)
                             );
-                            setDialogOpen(true);
+
+                            setOpen(true);
                           }}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4"/>
                         </Button>
                       </>
                     )}
 
                   </div>
+
                 </TableCell>
 
               </TableRow>
+
             ))}
+
           </TableBody>
+
         </Table>
+
       </div>
+
     </>
   );
 }
