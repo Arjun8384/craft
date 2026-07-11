@@ -153,7 +153,7 @@ function FormDescription({
     <p
       id={formDescriptionId}
       className={cn(
-        "text-sm text-muted-foreground",
+        "text-sm text-grey-700",
         className
       )}
       {...props}

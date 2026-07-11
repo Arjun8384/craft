@@ -10,10 +10,10 @@ export default function DashboardLayout({
   children,
 }: Props) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="p-6">
+      <main className="mx-auto max-w-7xl py-8 px-6">
         {children}
       </main>
     </div>

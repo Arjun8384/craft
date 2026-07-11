@@ -30,7 +30,7 @@ export default function RecentLoans({
 
       <div className="divide-y">
         {loans.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">
+          <div className="p-8 text-center text-grey-700">
             No recent loans.
           </div>
         ) : (
@@ -46,7 +46,7 @@ export default function RecentLoans({
                     : "Unknown Tool"}
                 </p>
 
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-grey-700">
                   {loan.borrowerName}
                 </p>
               </div>

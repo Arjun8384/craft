@@ -66,7 +66,7 @@ export default function ToolForm({
         initialData?.condition ?? "Excellent",
       location: initialData?.location ?? "",
       status: initialData?.status ?? "Available",
-      image: initialData?.image ?? "",
+      // image: initialData?.image ?? "",
     },
   });
 
@@ -301,7 +301,7 @@ export default function ToolForm({
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="image"
           render={({ field }) => (
@@ -318,7 +318,7 @@ export default function ToolForm({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <Button
           type="submit"

@@ -9,7 +9,7 @@ async function handleResponse(response: Response) {
 
   if (!response.ok) {
     throw new Error(
-      data.message || "Something went wrong."
+      data.message ?? "Something went wrong."
     );
   }
 
@@ -65,20 +65,28 @@ export async function logout() {
 }
 
 export async function getMe(): Promise<IUser | null> {
-  const response = await fetch(
-    "/api/auth/me",
-    {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",
-    }
-  );
+  try {
+    const response = await fetch(
+      "/api/auth/me",
+      {
+        credentials: "include",
+        cache: "no-store",
+      }
+    );
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+
+    return data.user ?? null;
+  } catch (error) {
+    console.error(
+      "Failed to fetch current user:",
+      error
+    );
+
     return null;
   }
-
-  const data = await response.json();
-
-  return data.user as IUser;
 }

@@ -13,7 +13,7 @@ export default function ToolsPage() {
             Tool Inventory
           </h1>
 
-          <p className="text-muted-foreground">
+          <p className="text-grey-700">
             Manage tools in the library.
           </p>
         </div>
@@ -25,8 +25,8 @@ export default function ToolsPage() {
         </Link>
       </div>
 
-      <div className="rounded-xl border bg-card p-8">
-        <p className="text-muted-foreground">
+      <div className="rounded-xl border border-gray-200 shadow-sm bg-white p-8">
+        <p className="text-grey-700">
           Tool inventory is temporarily disabled while preparing the production build.
         </p>
       </div>

@@ -9,7 +9,8 @@ import {
 import { IUser } from "@/types/user";
 
 import {
-  getMe
+  getMe,
+  logout,
 } from "@/services/authService";
 
 export function useAuth() {
@@ -26,21 +27,38 @@ export function useAuth() {
           await getMe();
 
         setUser(currentUser);
+      } catch (error) {
+        console.error(error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     }, []);
 
-  useEffect(() => {
+  const handleLogout =
+    useCallback(async () => {
+      try {
+        await logout();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setUser(null);
+        window.location.href = "/login";
+      }
+    }, []);
+
+useEffect(() => {
+  queueMicrotask(() => {
     void loadUser();
-  }, [loadUser]);
+  });
+}, [loadUser]);
 
   return {
     user,
     loading,
     refresh: loadUser,
-    isAuthenticated:
-      user !== null,
-      role: user?.role || null,
+    logout: handleLogout,
+    isAuthenticated: !!user,
+    role: user?.role ?? null,
   };
 }

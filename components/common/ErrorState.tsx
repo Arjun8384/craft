@@ -23,7 +23,7 @@ export default function ErrorState({
         {title}
       </h2>
 
-      <p className="mt-2 max-w-md text-muted-foreground">
+      <p className="mt-2 max-w-md text-grey-700">
         {description}
       </p>
 

@@ -13,7 +13,7 @@ export default function NotFound() {
         Page Not Found
       </h2>
 
-      <p className="max-w-md text-muted-foreground">
+      <p className="max-w-md text-grey-700">
         The page you are looking for doesn&apos;t exist or has been moved.
       </p>
 

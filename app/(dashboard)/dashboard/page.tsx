@@ -26,7 +26,7 @@ export default function DashboardPage() {
 
   if (!stats) {
     return (
-      <div className="rounded-xl border bg-white p-10 text-center">
+      <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
         Failed to load dashboard.
       </div>
     );
@@ -35,11 +35,11 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold tracking-tight">
           Dashboard
         </h1>
 
-        <p className="text-muted-foreground">
+        <p className="text-grey-700 mt-2">
           Tool Lending Management System
         </p>
       </div>

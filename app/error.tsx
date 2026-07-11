@@ -21,7 +21,7 @@ export default function Error({
         Something went wrong
       </h1>
 
-      <p className="max-w-lg text-muted-foreground">
+      <p className="max-w-lg text-grey-700">
         An unexpected error occurred while loading this page.
       </p>
 

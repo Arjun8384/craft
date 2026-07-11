@@ -62,7 +62,7 @@ export default function StatsCards({
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-grey-700">
                   {card.title}
                 </p>
 
@@ -71,7 +71,7 @@ export default function StatsCards({
                 </h2>
               </div>
 
-              <div className="rounded-full bg-primary/10 p-3">
+              <div className="rounded-full bg-blue-600/10 p-3">
                 <Icon className="h-6 w-6 text-primary" />
               </div>
             </div>

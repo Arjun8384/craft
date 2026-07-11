@@ -8,12 +8,12 @@ export default function NewToolPage() {
           Add New Tool
         </h1>
 
-        <p className="text-muted-foreground">
+        <p className="text-grey-700">
           Fill in the details below.
         </p>
       </div>
 
-      <div className="rounded-lg border bg-background p-6">
+      <div className="rounded-lg border bg-white border-gray-200 shadow-sm p-6">
         <ToolForm mode="create" />
       </div>
     </section>

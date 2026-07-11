@@ -13,7 +13,7 @@ import EmptyState from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
+// import Image from "next/image";
 
 interface ToolDetailsPageProps {
   params: Promise<{
@@ -84,9 +84,9 @@ export default function ToolDetailsPage({
         </Link>
       </div>
 
-      <div className="rounded-xl border bg-background p-8">
+      <div className="rounded-xl border border-gray-200 shadow-sm bg-white p-8">
         <div className="grid gap-8 md:grid-cols-[260px_1fr]">
-          <div>
+          {/* <div>
             <Image
               src={
                 tool.image ||
@@ -95,7 +95,7 @@ export default function ToolDetailsPage({
               alt={tool.name}
               className="aspect-square w-full rounded-lg border object-cover"
             />
-          </div>
+          </div> */}
 
           <div className="space-y-6">
             <div>
@@ -103,7 +103,7 @@ export default function ToolDetailsPage({
                 {tool.name}
               </h1>
 
-              <p className="mt-2 text-muted-foreground">
+              <p className="mt-2 text-grey-700">
                 {tool.category}
               </p>
             </div>
@@ -122,7 +122,7 @@ export default function ToolDetailsPage({
 
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-grey-700">
                   Total Quantity
                 </p>
 
@@ -132,7 +132,7 @@ export default function ToolDetailsPage({
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-grey-700">
                   Available Quantity
                 </p>
 
@@ -142,7 +142,7 @@ export default function ToolDetailsPage({
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-grey-700">
                   Location
                 </p>
 
@@ -152,7 +152,7 @@ export default function ToolDetailsPage({
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-grey-700">
                   Category
                 </p>
 
@@ -169,7 +169,7 @@ export default function ToolDetailsPage({
                 Description
               </h2>
 
-              <p className="leading-7 text-muted-foreground">
+              <p className="leading-7 text-grey-700">
                 {tool.description}
               </p>
             </div>

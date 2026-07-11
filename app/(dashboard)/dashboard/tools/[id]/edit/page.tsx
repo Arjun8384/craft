@@ -64,12 +64,12 @@ export default function EditToolPage({
           Edit Tool
         </h1>
 
-        <p className="text-muted-foreground">
+        <p className="text-grey-700">
           Update tool information.
         </p>
       </div>
 
-      <div className="rounded-lg border bg-background p-6">
+      <div className="rounded-lg border border-gray-200 shadow-sm bg-white p-6">
         <ToolForm
           mode="edit"
           initialData={tool}

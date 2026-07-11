@@ -4,7 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
-import { ITool } from "@/models/Tool";
+import type { ITool } from "@/models/Tool";
+
+import { useAuth } from "@/hooks/useAuth";
 
 import EmptyState from "@/components/common/EmptyState";
 import DeleteConfirmationDialog from "@/components/common/DeleteConfirmationDialog";
@@ -30,13 +32,10 @@ function getStatusVariant(status: string) {
   switch (status) {
     case "Available":
       return "default";
-
     case "Borrowed":
       return "secondary";
-
     case "Maintenance":
       return "destructive";
-
     default:
       return "outline";
   }
@@ -46,16 +45,12 @@ function getConditionVariant(condition: string) {
   switch (condition) {
     case "Excellent":
       return "default";
-
     case "Good":
       return "secondary";
-
     case "Fair":
       return "outline";
-
     case "Damaged":
       return "destructive";
-
     default:
       return "outline";
   }
@@ -65,6 +60,8 @@ export default function ToolTable({
   tools,
   onDelete,
 }: ToolTableProps) {
+  const { user } = useAuth();
+
   const [selectedId, setSelectedId] =
     useState<string | null>(null);
 
@@ -94,8 +91,16 @@ export default function ToolTable({
       <EmptyState
         title="No Tools Found"
         description="There are currently no tools in inventory."
-        actionLabel="Add Tool"
-        actionHref="/dashboard/tools/new"
+        actionLabel={
+          user?.role === "admin"
+            ? "Add Tool"
+            : undefined
+        }
+        actionHref={
+          user?.role === "admin"
+            ? "/dashboard/tools/new"
+            : undefined
+        }
       />
     );
   }
@@ -109,7 +114,7 @@ export default function ToolTable({
         onConfirm={handleDelete}
       />
 
-      <div className="rounded-lg border bg-background">
+      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -166,43 +171,49 @@ export default function ToolTable({
 
                 <TableCell>
                   <div className="flex justify-end gap-2">
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      aria-label={`View ${tool.name}`}
+
+                    <Link
+                      href={`/dashboard/tools/${tool._id}`}
                     >
-                      <Link
-                        href={`/dashboard/tools/${tool._id}`}
+                      <Button
+                        size="icon"
+                        variant="outline"
                       >
                         <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                      </Button>
+                    </Link>
 
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      aria-label={`Edit ${tool.name}`}
-                    >
-                      <Link
-                        href={`/dashboard/tools/${tool._id}/edit`}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                    {user?.role === "admin" && (
+                      <>
+                        <Link
+                          href={`/dashboard/tools/${tool._id}/edit`}
+                        >
+                          <Button
+                            size="icon"
+                            variant="secondary"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
 
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      aria-label={`Delete ${tool.name}`}
-                      onClick={() => {
-                        setSelectedId(tool._id.toString());
-                        setDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                        <Button
+                          size="icon"
+                          variant="destructive"
+                          onClick={() => {
+                            setSelectedId(
+                              String(tool._id)
+                            );
+                            setDialogOpen(true);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+
                   </div>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>

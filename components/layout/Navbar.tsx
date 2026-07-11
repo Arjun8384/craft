@@ -1,63 +1,92 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
-import { toast } from "sonner";
-
-import { logout } from "@/services/authService";
-import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { LayoutDashboard, Wrench, Plus, ClipboardList, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 export default function Navbar() {
-  const router = useRouter();
+  const pathname = usePathname();
+  const { user, logout } = useAuth();
 
-  const { user } = useAuth();
-
-  async function handleLogout() {
-    try {
-      await logout();
-
-      toast.success(
-        "Logged out successfully."
-      );
-
-      router.replace("/login");
-      router.refresh();
-    } catch {
-      toast.error(
-        "Logout failed."
-      );
-    }
-  }
+  const links = [
+    {
+      href: "/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      show: true,
+    },
+    {
+      href: "/dashboard/tools",
+      label: "Tools",
+      icon: Wrench,
+      show: user?.role === "admin",
+    },
+    {
+      href: "/dashboard/tools/new",
+      label: "Add Tool",
+      icon: Plus,
+      show: user?.role === "admin",
+    },
+    {
+      href: "/dashboard/loans",
+      label: "Loans",
+      icon: ClipboardList,
+      show: true,
+    },
+  ];
 
   return (
-    <header className="flex h-16 items-center justify-between border-b px-6">
-      <div>
-        <h1 className="text-lg font-semibold">
-          Tool Lending System
-        </h1>
+    <aside className="w-64 min-h-screen border-r bg-white">
+      <div className="border-b p-6">
+        <h2 className="text-2xl font-bold text-slate-800">
+          Craft Library
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-500">
+          {user?.role === "admin"
+            ? "Administrator"
+            : "Library Member"}
+        </p>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="text-right">
-          <p className="font-medium">
-            {user?.name}
-          </p>
+      <nav className="space-y-2 p-4">
+        {links
+          .filter((item) => item.show)
+          .map((item) => {
+            const Icon = item.icon;
 
-          <p className="text-sm text-muted-foreground">
-            {user?.role}
-          </p>
-        </div>
+            return (
+              <Link key={item.href} href={item.href}>
+                <div
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-4 py-3 transition-colors",
+                    pathname === item.href
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-700 hover:bg-slate-100"
+                  )}
+                >
+                  <Icon size={18} />
+                  {item.label}
+                </div>
+              </Link>
+            );
+          })}
+      </nav>
 
+      <div className="absolute bottom-6 w-64 px-4">
         <Button
-          variant="outline"
-          onClick={handleLogout}
-          aria-label="Logout"
+          variant="destructive"
+          className="w-full"
+          onClick={logout}
         >
+          <LogOut className="mr-2 h-4 w-4" />
           Logout
         </Button>
       </div>
-    </header>
+    </aside>
   );
 }

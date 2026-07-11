@@ -13,7 +13,7 @@ export default function LoansPage() {
             Lending Management
           </h1>
 
-          <p className="text-muted-foreground">
+          <p className="text-grey-700">
             Manage borrowed tools.
           </p>
         </div>
@@ -25,8 +25,8 @@ export default function LoansPage() {
         </Link>
       </div>
 
-      <div className="rounded-xl border bg-card p-8">
-        <p className="text-muted-foreground">
+      <div className="rounded-xl border bg-white p-8">
+        <p className="text-grey-700">
           Loan management is temporarily
           disabled while preparing the
           production build.

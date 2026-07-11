@@ -31,7 +31,7 @@ export default function Pagination({
         Previous
       </Button>
 
-      <span className="text-sm text-muted-foreground">
+      <span className="text-sm text-grey-700">
         Page {page} of {totalPages}
       </span>
 
