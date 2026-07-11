@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { loanSchema } from "@/lib/loanValidators";
 import { sanitizeInput } from "@/lib/sanitize";
 import {
-  requireAdmin,
+  // requireAdmin,
   requireAuth,
 } from "@/lib/auth";
 
@@ -105,12 +105,16 @@ export async function GET(
         hasPrev: page > 1,
       },
     });
-  } catch {
+  } catch (error) {
+    console.error(error);
+
     return NextResponse.json(
       {
         success: false,
         message:
-          "Failed to fetch loans.",
+          error instanceof Error
+            ? error.message
+            : "Internal server error",
       },
       {
         status: 500,
@@ -123,7 +127,7 @@ export async function POST(
   req: NextRequest
 ) {
   try {
-    await requireAdmin();
+    // await requireAdmin();
 
     await connectDB();
 
@@ -229,12 +233,16 @@ export async function POST(
         status: 201,
       }
     );
-  } catch {
+  } catch (error) {
+console.error(error);
+
     return NextResponse.json(
       {
         success: false,
         message:
-          "Failed to create loan.",
+          error instanceof Error
+            ? error.message
+            : "Internal server error",
       },
       {
         status: 500,

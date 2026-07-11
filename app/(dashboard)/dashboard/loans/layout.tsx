@@ -14,5 +14,7 @@ export default async function LoansLayout({
     redirect("/dashboard");
   }
 
-  return children;
+  return (
+    <>{children}</>
+  );
 }

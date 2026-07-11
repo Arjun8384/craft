@@ -36,8 +36,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden min-h-screen w-64 border-r bg-white md:flex md:flex-col">
-      <div className="border-b p-6">
+      <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white shadow-sm">      <div className="border-b p-6">
         <h1 className="text-xl font-bold">
           Tool Lending
         </h1>

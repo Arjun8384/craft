@@ -40,8 +40,7 @@ export default function Navbar() {
   ];
 
   return (
-    <aside className="w-64 min-h-screen border-r bg-white">
-      <div className="border-b p-6">
+      <aside className="flex h-screen w-64 flex-col border-r bg-white shadow-sm">      <div className="border-b p-6">
         <h2 className="text-2xl font-bold text-slate-800">
           Craft Library
         </h2>
@@ -53,7 +52,7 @@ export default function Navbar() {
         </p>
       </div>
 
-      <nav className="space-y-2 p-4">
+      <nav className="space-y-2 p-4 flex-1 overflow-y-auto">
         {links
           .filter((item) => item.show)
           .map((item) => {
@@ -77,7 +76,7 @@ export default function Navbar() {
           })}
       </nav>
 
-      <div className="absolute bottom-6 w-64 px-4">
+      <div className="border-t p-4">
         <Button
           variant="destructive"
           className="w-full"

@@ -1,7 +1,13 @@
+import { ITool } from "./tool";
+
 export interface ILoan {
   _id: string;
 
-  toolId: string;
+  toolId: string | ITool;
+
+  toolName: string;
+
+  returnDate: string;
 
   borrowerName: string;
 
@@ -26,7 +32,8 @@ export interface ILoan {
   updatedAt?: string;
 }
 
-export type LoanPayload = Omit<
-  ILoan,
-  "_id" | "createdAt" | "updatedAt"
->;
+export interface LoanPayload {
+  toolId: string;
+  quantity: number;
+  expectedReturnDate: string;
+}

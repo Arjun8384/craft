@@ -37,31 +37,24 @@ export interface LoanResponse {
   pagination: LoanPagination;
 }
 
-export async function getLoans() {
-  const response = await fetch(
-    "/api/loans",
-    {
-      credentials: "include",
-    }
-  );
+export async function getLoans(): Promise<LoanResponse> {
+  const response = await fetch(BASE_URL, {
+    credentials: "include",
+    cache: "no-store",
+  });
 
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      result.message ??
-      "Failed to fetch loans."
-    );
-  }
-
-  return result.data;
+  return handleResponse(response);
 }
 
 
 export async function getLoan(id: string) {
-  const response = await fetch(`${BASE_URL}/${id}`, {
-    cache: "no-store",
-  });
+  const response = await fetch(
+    `${BASE_URL}/${id}`,
+    {
+      credentials: "include",
+      cache: "no-store",
+    }
+  );
 
   return handleResponse(response);
 }
@@ -71,6 +64,7 @@ export async function createLoan(
 ) {
   const response = await fetch(BASE_URL, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -85,6 +79,7 @@ export async function returnLoan(id: string) {
     `${BASE_URL}/${id}/return`,
     {
       method: "PATCH",
+      credentials: "include",
     }
   );
 

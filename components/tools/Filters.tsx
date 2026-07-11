@@ -12,74 +12,62 @@ interface FiltersProps {
   categories: string[];
 
   category: string;
-
   status: string;
-
   condition: string;
 
-  onCategoryChange: (
-    value: string
-  ) => void;
-
-  onStatusChange: (
-    value: string
-  ) => void;
-
-  onConditionChange: (
-    value: string
-  ) => void;
+  onCategoryChange: (value: string | null) => void;
+  onStatusChange: (value: string | null) => void;
+  onConditionChange: (value: string | null) => void;
 }
 
 export default function Filters({
   categories,
   category,
+  // status,
+  // condition,
   onCategoryChange,
+  // onStatusChange,
+  // onConditionChange,
 }: FiltersProps) {
   return (
     <div className="flex flex-wrap gap-4">
-      <Select
-        value={category}
-        onValueChange={(value) => {
-          if (value) {
+      {/* Category */}
+
+          <Select
+          value={category}
+          onValueChange={(value) => {
             onCategoryChange(value);
-          }
-        }}
-      >
-        <SelectTrigger
-          className="w-[180px]"
-          aria-label="Filter by category"
+          }}
         >
+        <SelectTrigger className="w-48">
           <SelectValue placeholder="Category" />
         </SelectTrigger>
 
         <SelectContent>
-  <SelectItem value="all">
-    All Categories
-  </SelectItem>
+          <SelectItem value="all">
+            All Categories
+          </SelectItem>
 
-  {categories.map((item) => (
-    <SelectItem
-      key={item}
-      value={item}
-    >
-      {item}
-    </SelectItem>
-  ))}
-</SelectContent>
+          {categories.map((item) => (
+            <SelectItem
+              key={item}
+              value={item}
+            >
+              {item}
+            </SelectItem>
+          ))}
+        </SelectContent>
       </Select>
 
-      <Select
-        value={category}
-        onValueChange={(value) => {
-          if (value) {
-            onCategoryChange(value);
-          }
-        }}
-      >
-        <SelectTrigger
-          className="w-[180px]"
-          aria-label="Filter by status"
-        >
+      {/* Status */}
+
+          <Select
+            value={category}
+            onValueChange={(value) => {
+              onCategoryChange(value);
+            }}
+          >
+        <SelectTrigger className="w-48">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
 
@@ -102,18 +90,15 @@ export default function Filters({
         </SelectContent>
       </Select>
 
-      <Select
-        value={category}
-        onValueChange={(value) => {
-          if (value) {
-            onCategoryChange(value);
-          }
-        }}
-      >
-        <SelectTrigger
-          className="w-[180px]"
-          aria-label="Filter by condition"
-        >
+      {/* Condition */}
+
+          <Select
+            value={category}
+            onValueChange={(value) => {
+              onCategoryChange(value);
+            }}
+          >
+        <SelectTrigger className="w-48">
           <SelectValue placeholder="Condition" />
         </SelectTrigger>
 

@@ -1,5 +1,5 @@
-import { ILoan } from "@/models/Loan";
-import { ITool } from "@/models/Tool";
+import { ILoan } from "@/types/loan";
+import { ITool } from "@/types/tool";
 
 export interface DashboardStats {
   totalTools: number;
