@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { createLoan } from "@/services/loanService";
 import { LoanPayload } from "@/types/loan";
-import { ITool } from "@/models/Tool";
+import { ITool } from "@/types/tool";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ITool } from "@/models/Tool";
+import { ITool } from "@/types/tool";
 interface Props {
   tools: ITool[];
 }

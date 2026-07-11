@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getTools } from "@/services/toolService";
-import { ITool } from "@/models/Tool";
+import type { ITool } from "@/types/tool";
 
 export function useTools() {
   const query = useQuery<ITool[]>({

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
 import type { ToolPayload } from "@/services/toolService";
-import type { ITool } from "@/models/Tool";
+import type { ITool } from "@/types/tool";
 import { toolSchema } from "@/lib/validators";
 import type { ToolInput } from "@/lib/validators";
 

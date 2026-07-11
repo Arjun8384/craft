@@ -14,13 +14,6 @@ async function handleResponse(response: Response) {
   return data;
 }
 
-// interface ToolQuery {
-//   search?: string;
-//   category?: string;
-//   status?: string;
-//   condition?: string;
-// }
-
 export async function getTools() {
   const response = await fetch(
     "/api/tools",

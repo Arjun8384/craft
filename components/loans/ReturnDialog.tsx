@@ -11,50 +11,58 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface ReturnDialogProps {
+interface Props {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  loading: boolean;
+  onOpenChange: (
+    open: boolean
+  ) => void;
   onConfirm: () => void;
-  loading?: boolean;
 }
 
-export default function ReturnDialog({
+export default function ReturnConfirmationDialog({
   open,
+  loading,
   onOpenChange,
   onConfirm,
-  loading = false,
-}: ReturnDialogProps) {
+}: Props) {
   return (
     <AlertDialog
       open={open}
       onOpenChange={onOpenChange}
     >
       <AlertDialogContent>
+
         <AlertDialogHeader>
+
           <AlertDialogTitle>
-            Return Tool
+            Mark Tool as Returned?
           </AlertDialogTitle>
 
           <AlertDialogDescription>
-            This will mark the loan as returned and
-            automatically restore the available inventory.
+            This will increase the available inventory and
+            close the loan record.
           </AlertDialogDescription>
+
         </AlertDialogHeader>
 
         <AlertDialogFooter>
+
           <AlertDialogCancel>
             Cancel
           </AlertDialogCancel>
 
           <AlertDialogAction
-            onClick={onConfirm}
             disabled={loading}
+            onClick={onConfirm}
           >
             {loading
-              ? "Returning..."
-              : "Return Tool"}
+              ? "Processing..."
+              : "Confirm Return"}
           </AlertDialogAction>
+
         </AlertDialogFooter>
+
       </AlertDialogContent>
     </AlertDialog>
   );

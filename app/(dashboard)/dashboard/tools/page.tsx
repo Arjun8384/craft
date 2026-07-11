@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import type { ITool } from "@/types/tool"
+import type { ITool } from "@/types/tool";
 import { useAuth } from "@/hooks/useAuth";
 
 import {
@@ -22,10 +22,9 @@ export default function ToolsPage() {
   const { role } = useAuth();
 
   const [tools, setTools] = useState<ITool[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] =
-    useState("");
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   async function loadTools() {
     try {
@@ -34,20 +33,13 @@ export default function ToolsPage() {
       const data = await getTools();
 
       setTools(data);
-    } catch {
-      toast.error("Failed to load tools.");
     } finally {
       setLoading(false);
     }
   }
 
 useEffect(() => {
-  const initialize = async () => {
-    const data = await getTools();
-    setTools(data);
-  };
-
-  void initialize();
+    void loadTools();
 }, []);
 
   async function handleDelete(id: string) {
@@ -55,7 +47,7 @@ useEffect(() => {
 
     toast.success("Tool deleted.");
 
-    loadTools();
+    await loadTools();
   }
 
   const filteredTools = useMemo(() => {

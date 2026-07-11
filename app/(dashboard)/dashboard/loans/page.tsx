@@ -1,92 +1,216 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { ILoan } from "@/types/loan";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 
 import LoanTable from "@/components/loans/LoanTable";
-import { returnLoan } from "@/services/loanService";
-import { getLoans } from "@/services/loanService";
-import { ILoan } from "@/types/loan";
+import LoanStats from "@/components/loans/LoanStats";
+import LoanFilters from "@/components/loans/LoanFilters";
+
+import {
+  getLoans,
+  returnLoan,
+} from "@/services/loanService";
 
 export default function LoansPage() {
-  const [loans, setLoans] = useState<ILoan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loans, setLoans] =
+    useState<ILoan[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [search, setSearch] =
+    useState("");
+
+  const [status, setStatus] =
+    useState("all");
 
   async function loadLoans() {
     try {
-      const response = await getLoans();
+      setLoading(true);
+
+      const response =
+        await getLoans();
+
       setLoans(response.data ?? []);
     } catch {
-      toast.error("Failed to load loans.");
+      toast.error(
+        "Failed to load loans."
+      );
     } finally {
       setLoading(false);
     }
   }
 
-    async function handleReturn(id: string) {
+  async function handleReturn(
+    id: string
+  ) {
     try {
       await returnLoan(id);
 
-      toast.success("Tool returned successfully.");
+      toast.success(
+        "Tool returned successfully."
+      );
 
       await loadLoans();
     } catch {
-      toast.error("Failed to return tool.");
+      toast.error(
+        "Failed to return tool."
+      );
     }
   }
 
   useEffect(() => {
-      const timer = setTimeout(() => {
-          void loadLoans();
-      }, 0);
+    const timer = setTimeout(() => {
+      void loadLoans();
+    }, 0);
 
-      return () => clearTimeout(timer);
+    return () =>
+      clearTimeout(timer);
   }, []);
 
+  const activeLoans =
+    loans.filter(
+      (loan) =>
+        loan.status === "Borrowed"
+    ).length;
+
+  const returnedLoans =
+    loans.filter(
+      (loan) =>
+        loan.status === "Returned"
+    ).length;
+
+  const overdueLoans =
+    loans.filter((loan) => {
+      return (
+        loan.status ===
+          "Borrowed" &&
+        new Date(
+          loan.expectedReturnDate
+        ) < new Date()
+      );
+    }).length;
+
+  const borrowedItems =
+    loans.reduce(
+      (sum, loan) =>
+        sum + loan.quantity,
+      0
+    );
+
+  const filteredLoans =
+    useMemo(() => {
+      return loans.filter((loan) => {
+        const toolName =
+          typeof loan.toolId ===
+            "object" &&
+          loan.toolId !== null
+            ? loan.toolId.name
+            : "";
+
+        const matchesSearch =
+          loan.borrowerName
+            .toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          loan.borrowerEmail
+            .toLowerCase()
+            .includes(
+              search.toLowerCase()
+            ) ||
+          toolName
+            .toLowerCase()
+            .includes(
+              search.toLowerCase()
+            );
+
+        const overdue =
+          loan.status ===
+            "Borrowed" &&
+          new Date(
+            loan.expectedReturnDate
+          ) < new Date();
+
+        const matchesStatus =
+          status === "all"
+            ? true
+            : status ===
+                "Overdue"
+            ? overdue
+            : loan.status ===
+              status;
+
+        return (
+          matchesSearch &&
+          matchesStatus
+        );
+      });
+    }, [
+      loans,
+      search,
+      status,
+    ]);
+
   if (loading) {
-    return <LoadingSpinner message="Loading loans..." />;
+    return (
+      <LoadingSpinner message="Loading loans..." />
+    );
   }
 
   return (
     <section className="space-y-6">
 
-      <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-3xl font-bold">
+          Loan Management
+        </h1>
 
-        <div>
-          <h1 className="text-3xl font-bold">
-            Borrowed Tools
-          </h1>
-
-          <p className="text-slate-600 mt-1">
-            Track all borrowed tools.
-          </p>
-        </div>
-
-        <Link href="/dashboard/loans/new">
-          <Button>
-            Borrow Tool
-          </Button>
-        </Link>
-
+        <p className="mt-2 text-slate-600">
+          Manage all borrowed and returned tools.
+        </p>
       </div>
 
-      {Array.isArray(loans) && loans.length === 0 ? (
+      <LoanStats
+        active={activeLoans}
+        returned={returnedLoans}
+        overdue={overdueLoans}
+        borrowedItems={
+          borrowedItems
+        }
+      />
+
+      <LoanFilters
+        search={search}
+        status={status}
+        onSearchChange={
+          setSearch
+        }
+        onStatusChange={
+          setStatus
+        }
+      />
+
+      {filteredLoans.length ===
+      0 ? (
         <EmptyState
-          title="No Active Loans"
-          description="Nobody has borrowed any tools yet."
-          actionHref="/dashboard/loans/new"
-          actionLabel="Borrow Tool"
+          title="No Loans Found"
+          description="No loans match the selected filters."
         />
       ) : (
-        <LoanTable loans={loans} onReturn={handleReturn} />
+        <LoanTable
+          loans={filteredLoans}
+          onReturn={
+            handleReturn
+          }
+        />
       )}
-
     </section>
   );
 }
