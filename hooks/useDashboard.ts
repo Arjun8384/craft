@@ -1,27 +1,38 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
-import {
-  getDashboardStats,
-} from "@/services/dashboardService";
+import { getDashboardStats } from "@/services/dashboardService";
+
+import type { DashboardStats } from "@/types/dashboard";
 
 export function useDashboard() {
-  const query = useQuery({
-    queryKey: ["dashboard"],
+  const [stats, setStats] =
+    useState<DashboardStats | null>(null);
 
-    queryFn: getDashboardStats,
+  const [loading, setLoading] =
+    useState(true);
 
-    staleTime: 60000,
-  });
+  async function loadDashboard() {
+    try {
+      setLoading(true);
+
+      const response =
+  await getDashboardStats();
+
+setStats(response);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadDashboard();
+  }, []);
 
   return {
-    stats: query.data,
-
-    loading: query.isPending,
-
-    error: query.error,
-
-    refresh: query.refetch,
+    stats,
+    loading,
+    refresh: loadDashboard,
   };
 }

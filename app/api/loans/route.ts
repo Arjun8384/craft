@@ -71,7 +71,7 @@ export async function GET(
     if (status !== "all"){
       query.status = status;
     }
-    if (status !== "admin") {
+    if (user.role !== "admin") {
       query.borrowerEmail = user.email;
     }
 

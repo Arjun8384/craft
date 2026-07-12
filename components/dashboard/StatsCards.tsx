@@ -7,13 +7,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 
-interface DashboardStats {
-  totalTools: number;
-  borrowedTools: number;
-  availableTools: number;
-  returnedTools: number;
-  activeLoans: number;
-}
+import type { DashboardStats } from "@/types/dashboard";
 
 interface StatsCardsProps {
   stats: DashboardStats;

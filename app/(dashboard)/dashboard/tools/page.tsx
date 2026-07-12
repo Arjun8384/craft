@@ -39,7 +39,9 @@ export default function ToolsPage() {
   }
 
 useEffect(() => {
+  queueMicrotask(() => {
     void loadTools();
+  });
 }, []);
 
   async function handleDelete(id: string) {

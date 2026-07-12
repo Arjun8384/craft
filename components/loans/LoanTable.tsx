@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 import EmptyState from "@/components/common/EmptyState";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ReturnConfirmationDialog from "@/components/loans/ReturnConfirmationDialog";
 
 import { Badge } from "@/components/ui/badge";
@@ -22,12 +23,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface LoanTableProps {
+interface Props {
   loans: ILoan[];
-  onReturn?: (
+  onReturn: (
     id: string
   ) => Promise<void>;
-  showActions?: boolean;
 }
 
 function isTool(
@@ -42,62 +42,88 @@ function isTool(
 export default function LoanTable({
   loans,
   onReturn,
-  showActions = false,
-}: LoanTableProps) {
-  const { user } = useAuth();
+}: Props) {
+  const {
+    user,
+    loading: authLoading,
+  } = useAuth();
 
-  const [selectedLoan, setSelectedLoan] = useState<ILoan | null>(null);
+  const isAdmin =
+    user?.role === "admin";
+
+  const [selectedLoan, setSelectedLoan] =
+    useState<ILoan | null>(null);
+
+  const [dialogOpen, setDialogOpen] =
+    useState(false);
 
   const [loading, setLoading] =
     useState(false);
 
-  const [open, setOpen] =
-    useState(false);
+  if (authLoading) {
+    return (
+      <LoadingSpinner message="Loading..." />
+    );
+  }
 
   async function confirmReturn() {
     if (!selectedLoan) return;
 
-    setLoading(true);
-
     try {
-      if(onReturn) {
-      await onReturn(selectedLoan._id);}
-      setOpen(false);
+      setLoading(true);
+
+      await onReturn(selectedLoan._id);
+
+      setDialogOpen(false);
+      setSelectedLoan(null);
     } finally {
       setLoading(false);
     }
+  }
+
+  function openDialog(
+    loan: ILoan
+  ) {
+    setSelectedLoan(loan);
+    setDialogOpen(true);
   }
 
   if (!loans.length) {
     return (
       <EmptyState
         title="No Borrow Records"
-        description="No tools have been borrowed yet."
+        description="There are no active borrowed tools."
       />
     );
   }
 
   return (
     <>
-      {selectedLoan && (
-        <ReturnConfirmationDialog
-          open={open}
-          loading={loading}
-          borrower={
-            selectedLoan.borrowerName
+      <ReturnConfirmationDialog
+        open={dialogOpen}
+        loading={loading}
+        borrower={
+          selectedLoan?.borrowerName ??
+          ""
+        }
+        tool={
+          selectedLoan &&
+          isTool(selectedLoan.toolId)
+            ? selectedLoan.toolId.name
+            : ""
+        }
+        quantity={
+          selectedLoan?.quantity ?? 0
+        }
+        onConfirm={confirmReturn}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+
+          if (!open) {
+            setSelectedLoan(null);
           }
-          tool={
-            isTool(selectedLoan.toolId)
-              ? selectedLoan.toolId.name
-              : "Unknown Tool"
-          }
-          quantity={
-            selectedLoan.quantity
-          }
-          onConfirm={confirmReturn}
-          onOpenChange={setOpen}
-        />
-      )}
+        }}
+      />
 
       <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
 
@@ -116,7 +142,7 @@ export default function LoanTable({
               </TableHead>
 
               <TableHead>
-                Qty
+                Quantity
               </TableHead>
 
               <TableHead>
@@ -131,12 +157,11 @@ export default function LoanTable({
                 Status
               </TableHead>
 
-              {showActions &&
-                  user?.role === "admin" && (
-                    <TableHead className="text-right">
-                      Action
-                    </TableHead>
-                )}
+              {isAdmin && (
+                <TableHead className="text-right">
+                  Action
+                </TableHead>
+              )}
 
             </TableRow>
 
@@ -152,7 +177,10 @@ export default function LoanTable({
                   : "Unknown Tool";
 
               return (
-                <TableRow key={loan._id}>
+
+                <TableRow
+                  key={loan._id}
+                >
 
                   <TableCell className="font-medium">
                     {loan.borrowerName}
@@ -193,28 +221,38 @@ export default function LoanTable({
 
                   </TableCell>
 
-                  {user?.role ===
-                    "admin" && (
+                  {isAdmin && (
+
                     <TableCell className="text-right">
 
                       {loan.status ===
-                        "Borrowed" && (
+                      "Borrowed" ? (
+
                         <Button
                           size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedLoan(loan);
-                            setOpen(true);
-                          }}                           
+                          onClick={() =>
+                            openDialog(
+                              loan
+                            )
+                          }
                         >
                           Return
                         </Button>
+
+                      ) : (
+
+                        <span className="text-sm text-slate-400">
+                          Returned
+                        </span>
+
                       )}
 
                     </TableCell>
+
                   )}
 
                 </TableRow>
+
               );
             })}
 

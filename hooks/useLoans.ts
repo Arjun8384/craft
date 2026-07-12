@@ -1,28 +1,38 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 import { getLoans } from "@/services/loanService";
+
 import { ILoan } from "@/types/loan";
 
 export function useLoans() {
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery<ILoan[]>({
-    queryKey: ["loans"],
-    queryFn: async () => {
-      const response = await getLoans();
-      return response.data;
-    },
-  });
+  const [loans, setLoans] =
+    useState<ILoan[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  async function loadLoans() {
+    try {
+      setLoading(true);
+
+      const response =
+        await getLoans();
+
+      setLoans(response.data ?? []);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadLoans();
+  }, []);
 
   return {
-    loans: data ?? [],
-    loading: isLoading,
-    error,
-    refetch,
+    loans,
+    loading,
+    refresh: loadLoans,
   };
 }

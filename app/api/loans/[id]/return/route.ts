@@ -17,14 +17,15 @@ export async function PATCH(
   { params }: Context
 ) {
   try {
-    const user = await requireAdmin();
+    await requireAdmin();
+
+    console.log("RETURN ROUTE HIT");
 
     await connectDB();
 
     const { id } = await params;
 
-    const loan =
-      await Loan.findById(id);
+    const loan = await Loan.findById(id);
 
     if (!loan) {
       return NextResponse.json(
@@ -38,9 +39,7 @@ export async function PATCH(
       );
     }
 
-    if (
-      loan.status === "Returned"
-    ) {
+    if (loan.status === "Returned") {
       return NextResponse.json(
         {
           success: false,
@@ -53,10 +52,9 @@ export async function PATCH(
       );
     }
 
-    const tool =
-      await Tool.findById(
-        loan.toolId
-      );
+    const tool = await Tool.findById(
+      loan.toolId
+    );
 
     if (!tool) {
       return NextResponse.json(
@@ -70,39 +68,54 @@ export async function PATCH(
       );
     }
 
+    // Update Tool
+
     tool.availableQuantity +=
       loan.quantity;
 
-    tool.status = tool.availableQuantity === 0 ? "Borrowed" : "Available";
+    tool.status =
+      tool.availableQuantity > 0
+        ? "Available"
+        : "Borrowed";
 
-    await tool.save();
-    await loan.save();
+    // Update Loan
 
     loan.status = "Returned";
 
-loan.actualReturnDate = new Date();
-loan.returnedAt = new Date();
-await loan.save();
+    loan.actualReturnDate =
+      new Date();
+
+    loan.returnedAt =
+      new Date();
+
+    // Save Both
+
+    await tool.save();
+
+    await loan.save();
+
+    console.log("RETURN COMPLETED");
 
     return NextResponse.json({
       success: true,
-      message: "Tool returned successfully",
+      message:
+        "Tool returned successfully.",
       data: loan,
     });
   } catch (error) {
-  console.error(error);
+    console.error(error);
 
-  return NextResponse.json(
-    {
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to return tool.",
-    },
-    {
-      status: 500,
-    }
-  );
-}
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to return tool.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }

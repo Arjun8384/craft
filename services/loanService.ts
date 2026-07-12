@@ -46,6 +46,20 @@ export async function getLoans(): Promise<LoanResponse> {
   return handleResponse(response);
 }
 
+export async function returnLoan(id: string) {
+  console.log("Returning", id);
+
+  const response = await fetch(
+    `/api/loans/${id}/return`,
+    {
+      method: "PATCH",
+      credentials: "include",
+    }
+  );
+
+  return handleResponse(response);
+}
+
 
 export async function getLoan(id: string) {
   const response = await fetch(
@@ -70,18 +84,6 @@ export async function createLoan(
     },
     body: JSON.stringify(loan),
   });
-
-  return handleResponse(response);
-}
-
-export async function returnLoan(id: string) {
-  const response = await fetch(
-    `${BASE_URL}/${id}/return`,
-    {
-      method: "PATCH",
-      credentials: "include",
-    }
-  );
 
   return handleResponse(response);
 }

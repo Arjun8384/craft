@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
+import { useRouter } from "next/navigation";
+
 import { toast } from "sonner";
 
 import { ILoan } from "@/types/loan";
@@ -18,6 +21,8 @@ import {
 } from "@/services/loanService";
 
 export default function LoansPage() {
+  const router = useRouter();
+
   const [loans, setLoans] =
     useState<ILoan[]>([]);
 
@@ -47,6 +52,12 @@ export default function LoansPage() {
     }
   }
 
+useEffect(() => {
+  queueMicrotask(() => {
+    void loadLoans();
+  });
+}, []);
+
   async function handleReturn(
     id: string
   ) {
@@ -58,21 +69,16 @@ export default function LoansPage() {
       );
 
       await loadLoans();
+
+      router.refresh();
+
+      router.push("/dashboard");
     } catch {
       toast.error(
         "Failed to return tool."
       );
     }
   }
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      void loadLoans();
-    }, 0);
-
-    return () =>
-      clearTimeout(timer);
-  }, []);
 
   const activeLoans =
     loans.filter(
@@ -87,15 +93,13 @@ export default function LoansPage() {
     ).length;
 
   const overdueLoans =
-    loans.filter((loan) => {
-      return (
-        loan.status ===
-          "Borrowed" &&
+    loans.filter(
+      (loan) =>
+        loan.status === "Borrowed" &&
         new Date(
           loan.expectedReturnDate
         ) < new Date()
-      );
-    }).length;
+    ).length;
 
   const borrowedItems =
     loans.reduce(
@@ -107,10 +111,11 @@ export default function LoansPage() {
   const filteredLoans =
     useMemo(() => {
       return loans.filter((loan) => {
+
         const toolName =
           typeof loan.toolId ===
             "object" &&
-          loan.toolId !== null
+          loan.toolId
             ? loan.toolId.name
             : "";
 
@@ -160,7 +165,9 @@ export default function LoansPage() {
 
   if (loading) {
     return (
-      <LoadingSpinner message="Loading loans..." />
+      <LoadingSpinner
+        message="Loading loans..."
+      />
     );
   }
 
@@ -168,13 +175,15 @@ export default function LoansPage() {
     <section className="space-y-6">
 
       <div>
+
         <h1 className="text-3xl font-bold">
           Loan Management
         </h1>
 
         <p className="mt-2 text-slate-600">
-          Manage all borrowed and returned tools.
+          Manage all borrowed tools.
         </p>
+
       </div>
 
       <LoanStats
@@ -197,19 +206,18 @@ export default function LoansPage() {
         }
       />
 
-      {filteredLoans.length ===
-      0 ? (
+      {filteredLoans.length === 0 ? (
         <EmptyState
           title="No Loans Found"
-          description="No loans match the selected filters."
+          description="There are no matching loan records."
         />
       ) : (
         <LoanTable
           loans={filteredLoans}
           onReturn={handleReturn}
-          showActions
         />
       )}
+
     </section>
   );
 }

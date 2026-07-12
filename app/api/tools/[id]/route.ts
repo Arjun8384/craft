@@ -47,35 +47,25 @@ const currentBorrowers =
     status: "Borrowed",
   })
     .select(
-      "borrowerName quantity expectedReturnDate borrowerEmail"
+      "_id borrowerName borrowerEmail quantity borrowDate expectedReturnDate status"
     )
     .sort({
       expectedReturnDate: 1,
-    });
+    })
+    .lean();
 
 const borrowHistory =
   await Loan.find({
     toolId: id,
   })
     .select(
-      "borrowerName quantity borrowDate expectedReturnDate status"
+      "_id borrowerName borrowerEmail quantity borrowDate expectedReturnDate status"
     )
     .sort({
       createdAt: -1,
     })
-    .limit(10);
-
-    if (!tool) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Tool not found.",
-        },
-        {
-          status: 404,
-        }
-      );
-    }
+    .limit(10)
+    .lean();
 
     return NextResponse.json({
       success: true,

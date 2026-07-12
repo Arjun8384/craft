@@ -175,8 +175,9 @@ export default function ToolTable({
                 </TableCell>
 
                 <TableCell>
-                  <div className="flex justify-end gap-2">
-                    {isAdmin ? (
+<div className="flex justify-end gap-2">
+
+  {/* Everyone can view details */}
   <Link
     href={`/dashboard/tools/${tool._id}`}
   >
@@ -188,58 +189,48 @@ export default function ToolTable({
       <Eye className="h-4 w-4" />
     </Button>
   </Link>
-) : (
-  <Link
-    href={`/dashboard/loans/new?tool=${tool._id}`}
-  >
-    <Button
-      disabled={
-        tool.availableQuantity === 0
-      }
-      variant={
-        tool.availableQuantity === 0
-          ? "secondary"
-          : "default"
-      }
+
+  {isAdmin ? (
+    <>
+      <Link
+        href={`/dashboard/tools/${tool._id}/edit`}
+      >
+        <Button
+          variant="secondary"
+          size="icon"
+          aria-label={`Edit ${tool.name}`}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+      </Link>
+
+      <Button
+        variant="destructive"
+        size="icon"
+        aria-label={`Delete ${tool.name}`}
+        onClick={() => {
+          setSelectedId(String(tool._id));
+          setOpen(true);
+        }}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </>
+  ) : (
+    <Link
+      href={`/dashboard/loans/new?tool=${tool._id}`}
     >
-      {tool.availableQuantity === 0
-        ? "Out of Stock"
-        : "Borrow"}
-    </Button>
-  </Link>
-)}
+      <Button
+        disabled={tool.availableQuantity <= 0}
+      >
+        {tool.availableQuantity > 0
+          ? "Borrow"
+          : "Out of Stock"}
+      </Button>
+    </Link>
+  )}
 
-                    {isAdmin && (
-                      <>
-                        <Link
-                          href={`/dashboard/tools/${tool._id}/edit`}
-                        >
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            aria-label={`Edit ${tool.name}`}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </Link>
-
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          aria-label={`Delete ${tool.name}`}
-                          onClick={() => {
-                            setSelectedId(
-                              String(tool._id)
-                            );
-
-                            setOpen(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
+</div>
                 </TableCell>
               </TableRow>
             ))}

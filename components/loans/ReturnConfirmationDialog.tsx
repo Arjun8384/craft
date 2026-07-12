@@ -46,16 +46,16 @@ export default function ReturnConfirmationDialog({
           </DialogTitle>
 
           <DialogDescription>
-            Confirm that this tool has been
-            physically returned.
+            This action will mark the loan
+            as returned and restore the tool
+            quantity to inventory.
           </DialogDescription>
 
         </DialogHeader>
 
-        <div className="space-y-3 rounded-lg border bg-slate-50 p-4">
+        <div className="space-y-4 rounded-lg border bg-slate-50 p-4">
 
           <div className="flex justify-between">
-
             <span className="text-slate-500">
               Borrower
             </span>
@@ -63,11 +63,9 @@ export default function ReturnConfirmationDialog({
             <span className="font-medium">
               {borrower}
             </span>
-
           </div>
 
           <div className="flex justify-between">
-
             <span className="text-slate-500">
               Tool
             </span>
@@ -75,11 +73,9 @@ export default function ReturnConfirmationDialog({
             <span className="font-medium">
               {tool}
             </span>
-
           </div>
 
           <div className="flex justify-between">
-
             <span className="text-slate-500">
               Quantity
             </span>
@@ -87,7 +83,6 @@ export default function ReturnConfirmationDialog({
             <span className="font-medium">
               {quantity}
             </span>
-
           </div>
 
         </div>
@@ -96,17 +91,17 @@ export default function ReturnConfirmationDialog({
 
           <Button
             variant="outline"
+            disabled={loading}
             onClick={() =>
               onOpenChange(false)
             }
-            disabled={loading}
           >
             Cancel
           </Button>
 
           <Button
-            onClick={onConfirm}
             disabled={loading}
+            onClick={onConfirm}
           >
             {loading
               ? "Returning..."

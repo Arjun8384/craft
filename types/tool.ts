@@ -18,3 +18,13 @@ export interface ITool {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IToolBorrower {
+  _id: string;
+  borrowerName: string;
+  borrowerEmail: string;
+  quantity: number;
+  borrowDate?: string;
+  expectedReturnDate: string;
+  status: string;
+}

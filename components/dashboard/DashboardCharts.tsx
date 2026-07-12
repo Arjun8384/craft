@@ -7,12 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-interface DashboardStats {
-  inventoryChart: {
-    name: string;
-    value: number;
-  }[];
-}
+import type { DashboardStats } from "@/types/dashboard";
 
 interface DashboardChartsProps {
   stats: DashboardStats;

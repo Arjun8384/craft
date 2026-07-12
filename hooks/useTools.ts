@@ -1,20 +1,38 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+
 import { getTools } from "@/services/toolService";
-import type { ITool } from "@/types/tool";
+
+import { ITool } from "@/types/tool";
 
 export function useTools() {
-  const query = useQuery<ITool[]>({
-    queryKey: ["tools"],
-    queryFn: getTools,
-    staleTime: 60000,
-  });
+  const [tools, setTools] =
+    useState<ITool[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  async function loadTools() {
+    try {
+      setLoading(true);
+
+      const data =
+        await getTools();
+
+      setTools(data);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadTools();
+  }, []);
 
   return {
-    tools: query.data ?? [],
-    loading: query.isPending,
-    error: query.error,
-    refresh: query.refetch,
+    tools,
+    loading,
+    refresh: loadTools,
   };
 }
