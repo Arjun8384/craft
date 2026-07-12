@@ -12,7 +12,6 @@ export interface ITool extends Document {
   quantity: number;
   availableQuantity: number;
   location: string;
-  // image?: string;
   status: "Available" | "Borrowed" | "Maintenance";
   createdAt: Date;
   updatedAt: Date;
@@ -63,8 +62,6 @@ const ToolSchema = new Schema<ITool>(
       type: String,
       required: true,
     },
-
-    // image: String,
 
     status: {
       type: String,

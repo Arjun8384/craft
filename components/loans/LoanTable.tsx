@@ -25,7 +25,7 @@ import {
 
 interface Props {
   loans: ILoan[];
-  onReturn: (
+  onReturn?: (
     id: string
   ) => Promise<void>;
 }
@@ -66,20 +66,21 @@ export default function LoanTable({
     );
   }
 
-  async function confirmReturn() {
-    if (!selectedLoan) return;
+async function confirmReturn() {
+  if (!selectedLoan || !onReturn) return;
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      await onReturn(selectedLoan._id);
+    await onReturn(selectedLoan._id);
 
-      setDialogOpen(false);
-      setSelectedLoan(null);
-    } finally {
-      setLoading(false);
-    }
+    setDialogOpen(false);
+
+    setSelectedLoan(null);
+  } finally {
+    setLoading(false);
   }
+}
 
   function openDialog(
     loan: ILoan

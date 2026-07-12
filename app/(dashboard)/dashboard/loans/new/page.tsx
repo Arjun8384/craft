@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import LoanForm from "@/components/loans/LoanForm";
 import Tool from "@/models/Tool";
 import { connectDB } from "@/lib/mongodb";

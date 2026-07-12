@@ -132,10 +132,6 @@ export async function POST(req: NextRequest) {
       ),
 
       location: sanitizeInput(data.location),
-
-      image: data.image
-        ? sanitizeInput(data.image)
-        : "",
     });
 
     logAnalytics("Tool Created");
