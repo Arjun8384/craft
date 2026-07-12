@@ -206,9 +206,8 @@ export default function LoansPage() {
       ) : (
         <LoanTable
           loans={filteredLoans}
-          onReturn={
-            handleReturn
-          }
+          onReturn={handleReturn}
+          showActions
         />
       )}
     </section>

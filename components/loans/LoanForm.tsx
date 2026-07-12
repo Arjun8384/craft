@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { createLoan } from "@/services/loanService";
+
 import { LoanPayload } from "@/types/loan";
 import { ITool } from "@/types/tool";
+
+import { useAuth } from "@/hooks/useAuth";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,11 +26,13 @@ export default function LoanForm({
 }: LoanFormProps) {
   const router = useRouter();
 
+  const { user } = useAuth();
+
   const [loading, setLoading] =
     useState(false);
 
   const [form, setForm] =
-      useState<LoanPayload>({
+    useState<LoanPayload>({
       toolId: selectedToolId ?? "",
       borrowerName: "",
       borrowerEmail: "",
@@ -40,11 +45,15 @@ export default function LoanForm({
       status: "Borrowed",
     });
 
-    const selectedTool = tools.find(
-  (tool) =>
-    tool._id.toString() ===
-    form.toolId
-);
+  const selectedTool = useMemo(
+    () =>
+      tools.find(
+        (tool) =>
+          tool._id.toString() ===
+          form.toolId
+      ),
+    [tools, form.toolId]
+  );
 
   function handleChange(
     e: React.ChangeEvent<
@@ -72,18 +81,19 @@ export default function LoanForm({
 
       await createLoan(form);
 
-      console.log(
-        "[Analytics] User interacted with Feature Complete CRUD"
-      );
-
       toast.success(
         `Tool borrowed successfully.
-      Return it before ${new Date(
+Return it before ${new Date(
           form.expectedReturnDate
         ).toLocaleDateString()}.`
       );
 
-      router.push("/dashboard/loans");
+      if (user?.role === "admin") {
+        router.push("/dashboard/loans");
+      } else {
+        router.push("/dashboard/my-loans");
+      }
+
       router.refresh();
     } catch (error) {
       console.error(error);
@@ -102,41 +112,53 @@ export default function LoanForm({
       className="space-y-6"
     >
       <div className="grid gap-6 md:grid-cols-2">
+
         <div className="space-y-2">
           <Label htmlFor="toolId">
             Tool
           </Label>
 
-          <select
-            id="toolId"
-            name="toolId"
-            value={form.toolId}
-            onChange={handleChange}
-            className="w-full rounded-md border p-2"
-            required
-            aria-label="Select Tool"
-          >
-            <option value="">
-              Select Tool
-            </option>
+          {selectedToolId ? (
+            <Input
+              value={
+                selectedTool?.name ?? ""
+              }
+              disabled
+            />
+          ) : (
+            <select
+              id="toolId"
+              name="toolId"
+              value={form.toolId}
+              onChange={handleChange}
+              className="w-full rounded-md border p-2"
+              required
+            >
+              <option value="">
+                Select Tool
+              </option>
 
-            {tools
-              .filter(
-                (tool) =>
-                  tool.availableQuantity > 0
-              )
-              .map((tool) => (
-                <option
-                  key={tool._id.toString()}
-                  value={tool._id.toString()}
-                >
-                  {tool.name}
-                  {" • "}
-                  {tool.availableQuantity}
-                  available
-                </option>
-              ))}
-          </select>
+              {tools
+                .filter(
+                  (tool) =>
+                    tool.availableQuantity >
+                    0
+                )
+                .map((tool) => (
+                  <option
+                    key={tool._id.toString()}
+                    value={tool._id.toString()}
+                  >
+                    {tool.name}
+                    {" • "}
+                    {
+                      tool.availableQuantity
+                    }{" "}
+                    available
+                  </option>
+                ))}
+            </select>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -149,11 +171,13 @@ export default function LoanForm({
             name="quantity"
             type="number"
             min={1}
-            max={selectedTool?.availableQuantity ?? 1}
+            max={
+              selectedTool?.availableQuantity ??
+              1
+            }
             value={form.quantity}
             onChange={handleChange}
             required
-            aria-label="Quantity"
           />
         </div>
 
@@ -168,7 +192,6 @@ export default function LoanForm({
             value={form.borrowerName}
             onChange={handleChange}
             required
-            aria-label="Borrower Name"
           />
         </div>
 
@@ -184,7 +207,6 @@ export default function LoanForm({
             value={form.borrowerEmail}
             onChange={handleChange}
             required
-            aria-label="Borrower Email"
           />
         </div>
 
@@ -199,7 +221,6 @@ export default function LoanForm({
             value={form.borrowerPhone}
             onChange={handleChange}
             required
-            aria-label="Borrower Phone"
           />
         </div>
 
@@ -217,9 +238,9 @@ export default function LoanForm({
             }
             onChange={handleChange}
             required
-            aria-label="Expected Return Date"
           />
         </div>
+
       </div>
 
       <Button

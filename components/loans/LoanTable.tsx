@@ -1,8 +1,12 @@
 "use client";
 
+import { useState } from "react";
+
 import { useAuth } from "@/hooks/useAuth";
 
 import EmptyState from "@/components/common/EmptyState";
+import ReturnConfirmationDialog from "@/components/loans/ReturnConfirmationDialog";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -20,10 +24,10 @@ import {
 
 interface LoanTableProps {
   loans: ILoan[];
-
-  onReturn: (
+  onReturn?: (
     id: string
   ) => Promise<void>;
+  showActions?: boolean;
 }
 
 function isTool(
@@ -38,10 +42,33 @@ function isTool(
 export default function LoanTable({
   loans,
   onReturn,
+  showActions = false,
 }: LoanTableProps) {
   const { user } = useAuth();
 
-  if (loans.length === 0) {
+  const [selectedLoan, setSelectedLoan] = useState<ILoan | null>(null);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [open, setOpen] =
+    useState(false);
+
+  async function confirmReturn() {
+    if (!selectedLoan) return;
+
+    setLoading(true);
+
+    try {
+      if(onReturn) {
+      await onReturn(selectedLoan._id);}
+      setOpen(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!loans.length) {
     return (
       <EmptyState
         title="No Borrow Records"
@@ -51,119 +78,108 @@ export default function LoanTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-      <Table>
+    <>
+      {selectedLoan && (
+        <ReturnConfirmationDialog
+          open={open}
+          loading={loading}
+          borrower={
+            selectedLoan.borrowerName
+          }
+          tool={
+            isTool(selectedLoan.toolId)
+              ? selectedLoan.toolId.name
+              : "Unknown Tool"
+          }
+          quantity={
+            selectedLoan.quantity
+          }
+          onConfirm={confirmReturn}
+          onOpenChange={setOpen}
+        />
+      )}
 
-        <TableHeader>
-          <TableRow>
+      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
 
-            <TableHead>Borrower</TableHead>
+        <Table>
 
-            <TableHead>Tool</TableHead>
+          <TableHeader>
 
-            <TableHead className="text-center">
-              Qty
-            </TableHead>
+            <TableRow>
 
-            <TableHead>
-              Borrowed
-            </TableHead>
-
-            <TableHead>
-              Due Date
-            </TableHead>
-
-            <TableHead>
-              Status
-            </TableHead>
-
-            {user?.role === "admin" && (
-              <TableHead className="text-right">
-                Action
+              <TableHead>
+                Borrower
               </TableHead>
-            )}
 
-          </TableRow>
-        </TableHeader>
+              <TableHead>
+                Tool
+              </TableHead>
 
-        <TableBody>
+              <TableHead>
+                Qty
+              </TableHead>
 
-          {loans.map((loan) => {
+              <TableHead>
+                Borrowed
+              </TableHead>
 
-            const tool =
-              isTool(loan.toolId)
-                ? loan.toolId
-                : null;
+              <TableHead>
+                Due
+              </TableHead>
 
-            const overdue =
-              loan.status === "Borrowed" &&
-              new Date(
-                loan.expectedReturnDate
-              ) < new Date();
+              <TableHead>
+                Status
+              </TableHead>
 
-            return (
-              <TableRow key={loan._id}>
+              {showActions &&
+                  user?.role === "admin" && (
+                    <TableHead className="text-right">
+                      Action
+                    </TableHead>
+                )}
 
-                <TableCell>
+            </TableRow>
 
-                  <div className="font-medium">
+          </TableHeader>
+
+          <TableBody>
+
+            {loans.map((loan) => {
+
+              const toolName =
+                isTool(loan.toolId)
+                  ? loan.toolId.name
+                  : "Unknown Tool";
+
+              return (
+                <TableRow key={loan._id}>
+
+                  <TableCell className="font-medium">
                     {loan.borrowerName}
-                  </div>
+                  </TableCell>
 
-                  <div className="text-xs text-slate-500">
-                    {loan.borrowerEmail}
-                  </div>
+                  <TableCell>
+                    {toolName}
+                  </TableCell>
 
-                </TableCell>
+                  <TableCell>
+                    {loan.quantity}
+                  </TableCell>
 
-                <TableCell>
+                  <TableCell>
+                    {new Date(
+                      loan.borrowDate
+                    ).toLocaleDateString()}
+                  </TableCell>
 
-                  <div className="font-medium">
-                    {tool?.name ??
-                      "Unknown Tool"}
-                  </div>
-
-                  {tool?.category && (
-                    <div className="text-xs text-slate-500">
-                      {tool.category}
-                    </div>
-                  )}
-
-                </TableCell>
-
-                <TableCell className="text-center font-medium">
-                  {loan.quantity}
-                </TableCell>
-
-                <TableCell>
-                  {new Date(
-                    loan.borrowDate
-                  ).toLocaleDateString()}
-                </TableCell>
-
-                <TableCell>
-
-                  <span
-                    className={
-                      overdue
-                        ? "font-medium text-red-600"
-                        : ""
-                    }
-                  >
+                  <TableCell>
                     {new Date(
                       loan.expectedReturnDate
                     ).toLocaleDateString()}
-                  </span>
+                  </TableCell>
 
-                </TableCell>
+                  <TableCell>
 
-                <TableCell>
-
-                  {overdue ? (
-                    <Badge variant="destructive">
-                      Overdue
-                    </Badge>
-                  ) : (
                     <Badge
                       variant={
                         loan.status ===
@@ -174,42 +190,39 @@ export default function LoanTable({
                     >
                       {loan.status}
                     </Badge>
-                  )}
-
-                </TableCell>
-
-                {user?.role === "admin" && (
-
-                  <TableCell className="text-right">
-
-                    {loan.status ===
-                      "Borrowed" && (
-
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          onReturn(
-                            loan._id
-                          )
-                        }
-                      >
-                        Mark Returned
-                      </Button>
-
-                    )}
 
                   </TableCell>
 
-                )}
+                  {user?.role ===
+                    "admin" && (
+                    <TableCell className="text-right">
 
-              </TableRow>
-            );
-          })}
+                      {loan.status ===
+                        "Borrowed" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedLoan(loan);
+                            setOpen(true);
+                          }}                           
+                        >
+                          Return
+                        </Button>
+                      )}
 
-        </TableBody>
+                    </TableCell>
+                  )}
 
-      </Table>
-    </div>
+                </TableRow>
+              );
+            })}
+
+          </TableBody>
+
+        </Table>
+
+      </div>
+    </>
   );
 }

@@ -17,7 +17,7 @@ export async function PATCH(
   { params }: Context
 ) {
   try {
-    await requireAdmin();
+    const user = await requireAdmin();
 
     await connectDB();
 
@@ -73,23 +73,20 @@ export async function PATCH(
     tool.availableQuantity +=
       loan.quantity;
 
-    if (
-      tool.availableQuantity > 0
-    ) {
-      tool.status =
-        "Available";
-    }
+    tool.status = tool.availableQuantity === 0 ? "Borrowed" : "Available";
 
     await tool.save();
+    await loan.save();
 
     loan.status = "Returned";
 
 loan.actualReturnDate = new Date();
-
+loan.returnedAt = new Date();
 await loan.save();
 
     return NextResponse.json({
       success: true,
+      message: "Tool returned successfully",
       data: loan,
     });
   } catch (error) {

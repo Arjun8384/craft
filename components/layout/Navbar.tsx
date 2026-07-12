@@ -20,41 +20,36 @@ export default function Navbar() {
   const { user, logout } = useAuth();
 
   const links =
-    user?.role === "admin"
-      ? [
-          {
-            href: "/dashboard",
-            label: "Dashboard",
-            icon: LayoutDashboard,
-          },
-          {
-            href: "/dashboard/tools",
-            label: "Tools",
-            icon: Wrench,
-          },
-          {
-            href: "/dashboard/tools/new",
-            label: "Add Tool",
-            icon: Plus,
-          },
-          {
-            href: "/dashboard/loans",
-            label: "Loans",
-            icon: ClipboardList,
-          },
-        ]
-      : [
-          {
-            href: "/dashboard/tools",
-            label: "Available Tools",
-            icon: Wrench,
-          },
-          {
-            href: "/dashboard/my-loans",
-            label: "My Loans",
-            icon: ClipboardList,
-          },
-        ];
+  user?.role === "admin"
+    ? [
+        {
+          href: "/dashboard",
+          label: "Dashboard",
+          icon: LayoutDashboard,
+        },
+        {
+          href: "/dashboard/tools",
+          label: "Inventory",
+          icon: Wrench,
+        },
+        {
+          href: "/dashboard/tools/new",
+          label: "Add Tool",
+          icon: Plus,
+        },
+      ]
+    : [
+        {
+          href: "/dashboard/tools",
+          label: "Available Tools",
+          icon: Wrench,
+        },
+        {
+          href: "/dashboard/my-loans",
+          label: "My Loans",
+          icon: ClipboardList,
+        },
+      ];
 
   return (
     <aside className="flex h-screen w-64 flex-col border-r bg-white shadow-sm">

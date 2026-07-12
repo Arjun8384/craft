@@ -16,11 +16,13 @@ export async function GET(
   { params }: Context
 ) {
   try {
-    await requireAuth();
+    const user =
+      await requireAuth();
 
     await connectDB();
 
-    const { id } = await params;
+    const { id } =
+      await params;
 
     const loan =
       await Loan.findById(id)
@@ -38,16 +40,36 @@ export async function GET(
       );
     }
 
+    if (
+      user.role !== "admin" &&
+      loan.borrowerEmail !==
+        user.email
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Forbidden",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       data: loan,
     });
-  } catch {
+  } catch (error) {
+    console.error(error);
+
     return NextResponse.json(
       {
         success: false,
         message:
-          "Failed to fetch loan.",
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch loan.",
       },
       {
         status: 500,

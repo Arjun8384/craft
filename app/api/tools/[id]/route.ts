@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import Tool from "@/models/Tool";
+import Loan from "@/models/Loan";
 import { connectDB } from "@/lib/mongodb";
 import { toolSchema } from "@/lib/validators";
 import { sanitizeInput } from "@/lib/sanitize";
@@ -26,7 +27,43 @@ export async function GET(
 
     const { id } = await params;
 
-    const tool = await Tool.findById(id);
+const tool = await Tool.findById(id).lean();
+
+if (!tool) {
+  return NextResponse.json(
+    {
+      success: false,
+      message: "Tool not found.",
+    },
+    {
+      status: 404,
+    }
+  );
+}
+
+const currentBorrowers =
+  await Loan.find({
+    toolId: id,
+    status: "Borrowed",
+  })
+    .select(
+      "borrowerName quantity expectedReturnDate borrowerEmail"
+    )
+    .sort({
+      expectedReturnDate: 1,
+    });
+
+const borrowHistory =
+  await Loan.find({
+    toolId: id,
+  })
+    .select(
+      "borrowerName quantity borrowDate expectedReturnDate status"
+    )
+    .sort({
+      createdAt: -1,
+    })
+    .limit(10);
 
     if (!tool) {
       return NextResponse.json(
@@ -42,7 +79,16 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      data: tool,
+      data: {
+      ...tool,
+      borrowedQuantity:
+        tool.quantity -
+        tool.availableQuantity,
+
+      currentBorrowers,
+
+      borrowHistory,
+    },
     });
   } catch (error) {
     if (
