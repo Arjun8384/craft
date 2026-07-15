@@ -86,7 +86,7 @@ export default function ToolForm({
         toast.success("Tool updated successfully");
       }
 
-      router.push("/dashboard/tools");
+      router.replace("/dashboard/tools");
       router.refresh();
     } catch (error) {
       console.error(error);

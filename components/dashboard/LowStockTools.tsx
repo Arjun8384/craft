@@ -1,5 +1,3 @@
-"use client";
-
 import { ITool } from "@/types/tool";
 interface Props {
   tools: ITool[];

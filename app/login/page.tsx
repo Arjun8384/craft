@@ -16,7 +16,7 @@ if (loading) {
 }
 
 if (isAuthenticated) {
-  router.push("/dashboard");
+  router.replace("/dashboard");
   return null;
 }
   return (

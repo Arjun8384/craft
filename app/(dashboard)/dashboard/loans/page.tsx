@@ -72,7 +72,7 @@ useEffect(() => {
 
       router.refresh();
 
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch {
       toast.error(
         "Failed to return tool."

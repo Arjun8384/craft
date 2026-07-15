@@ -41,8 +41,7 @@ export async function requireAdmin() {
   console.log("Current user: ", user);
 
   if (
-    user.role !== "admin" 
-    // && user.role !== "manager"
+    user.role !== "admin"
   ) {
     throw new Error("Forbidden");
   }

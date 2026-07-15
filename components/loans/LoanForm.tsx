@@ -89,9 +89,9 @@ Return it before ${new Date(
       );
 
       if (user?.role === "admin") {
-        router.push("/dashboard/loans");
+        router.replace("/dashboard/loans");
       } else {
-        router.push("/dashboard/my-loans");
+        router.replace("/dashboard/my-loans");
       }
 
       router.refresh();
